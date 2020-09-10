@@ -1503,24 +1503,16 @@ namespace pd512 {
 
         if (_blsr_u64(v) == 0) {
             if (v << quot) {
-                // const unsigned __int128 *h = (const unsigned __int128 *) pd;
-                // const unsigned __int128 header = (*h);
                 const int64_t mask = v << quot;
                 bool att = (!(((uint64_t) header) & mask)) && (_mm_popcnt_u64(((uint64_t) header) & (mask - 1)) == quot);
                 assert(att == pd_find_50_v1(quot, rem, pd));
                 return (!(((uint64_t) header) & mask)) && (_mm_popcnt_u64(((uint64_t) header) & (mask - 1)) == quot);
-                // bool att = (!(h0 & mask)) && (_mm_popcnt_u64(h0 & (mask - 1)) == quot);
-                // assert(att == pd_find_50_v1(quot, rem, pd));
+                
             } else {
-                // const unsigned __int128 *h = (const unsigned __int128 *) pd;
-                // constexpr unsigned __int128 kLeftoverMask = (((unsigned __int128) 1) << (50 + 51)) - 1;
-                // const unsigned __int128 header = (*h) & kLeftoverMask;
                 const unsigned __int128 mask = ((unsigned __int128) v) << quot;
                 bool att = (!(header & mask)) && (popcount128(header & (mask - 1)) == quot);
                 assert(att == pd_find_50_v1(quot, rem, pd));
                 return (!(header & mask)) && (popcount128(header & (mask - 1)) == quot);
-                // bool att = (!(header & mask)) && (popcount128(header & (mask - 1)) == quot);
-                // assert(att == pd_find_50_v1(quot, rem, pd));
             }
         }
         const uint64_t h0 = ((uint64_t *) pd)[0];
@@ -1533,45 +1525,6 @@ namespace pd512 {
             const uint64_t h_cleared_quot_plus_one_set_bits = _blsr_u64(h_cleared_quot_set_bits);
             const uint64_t v_mask = ((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(h_cleared_quot_plus_one_set_bits)) & (~h0)) >> quot;
             return v_mask & v;
-
-            // const uint64_t mask = (~_bzhi_u64(-1, quot));
-            // const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask >> 1ul, h0);
-            // const uint64_t h_cleared_quot_plus_one_set_bits = _blsr_u64(h_cleared_quot_set_bits);
-            // const uint64_t v_mask = ((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(h_cleared_quot_plus_one_set_bits)) & (~h0)) >> quot;
-            // return v_mask & v;
-            //
-            // uint64_t line2 = _pdep_u64(mask >> 1ul, h0);
-            // uint64_t line3 = _pdep_u64(mask, h0);
-            // uint64_t line5 = ((line2 - 1) ^ (line3 - 1)) & (~h0);
-            // bool b_att = (line5 >> quot) & v;
-            // assert(b_att == pd_find_50_v1(quot, rem, pd));
-            // return b_att;
-            // uint64_t mask_m1 = ~_bzhi_u64(-1, quot);
-            // uint64_t pdep_res_begin = _pdep_u64(mask >> 1ul, h0);
-            // uint64_t begin_mask = ~_blsmsk_u64(pdep_res_begin);
-            // uint64_t begin_mask_shifted_old = (~_blsmsk_u64(pdep_res_begin)) >> quot;
-            // uint64_t begin_mask_shifted = ~(_blsmsk_u64(pdep_res_begin) >> quot);
-            // size_t k = 0;
-            // uint64_t line4 = line2 ^ line3;
-            //
-            // uint64_t att4 = _blsr_u64((line2 - 1) ^ (line3 - 1));
-            // uint64_t att5 = att4 >> quot;
-            // uint64_t att6 = att5 & v;
-            // bool b_att = (line5 >> quot) & v;
-            // if (b_att == res)
-            //
-            // const uint64_t mask_att = (~_bzhi_u64(-1, quot - 1));
-            // const uint64_t val_mask = (~(_bzhi_u64(-1, quot))) >> 1ul;
-            // assert(mask == val_mask);
-            //
-            // assert(h_cleared_quot_set_bits == line2);
-            //
-            // assert(h_cleared_quot_plus_one_set_bits == line3);
-            // const uint64_t v_mask_help = (((h_cleared_quot_set_bits - 1) ^ (h_cleared_quot_plus_one_set_bits - 1)) & (~h0));
-            // assert(v_mask_help == line5);
-            // const uint64_t v_mask = (((h_cleared_quot_set_bits - 1) ^ (h_cleared_quot_plus_one_set_bits - 1)) & (~h0)) >> quot;
-            // assert(v_mask == (v_mask_help >> quot));
-            // assert(pd_find_50_v1(quot, rem, pd) == (v_mask & v));
 
         } else if (quot == pop - 1) {
             const uint64_t leading_one_index = _lzcnt_u64(h0);
@@ -1589,89 +1542,11 @@ namespace pd512 {
             const uint64_t diff = _tzcnt_u64(h1 >> temp);
             return diff && ((v >> (temp - quot)) & ((UINT64_C(1) << diff) - 1));
         } else {
-            // const uint64_t mask = (~_bzhi_u64(-1, (quot - pop) - 1));
-            // const uint64_t mask = (~_bzhi_u64(-1, (quot - pop)));
-            // const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask >>1, h1);
-            // const uint64_t h_cleared_quot_plus_one_set_bits = _blsr_u64(h_cleared_quot_set_bits);
-            // const uint64_t v_mask = ((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(h_cleared_quot_plus_one_set_bits)) & (~h1)) >> (quot - pop);
-            // auto res = pd_find_50_v1(quot, rem, pd);
-            // if (((v_mask & v) != 0) != pd_find_50_v1(quot, rem, pd)) {
-            //     std::cout << "h0:\t\t" << v_pd512::bin_print_header_spaced(h0) << std::endl;
-            //     std::cout << "h1:\t\t" << v_pd512::bin_print_header_spaced(h1) << std::endl;
-            //     std::cout << "v:\t\t" << v_pd512::bin_print_header_spaced(v) << std::endl;
-            //     std::cout << "b_mask\t\t" << v_pd512::bin_print_header_spaced(h_cleared_quot_set_bits) << std::endl;
-            //     std::cout << "e_mask:\t\t" << v_pd512::bin_print_header_spaced(h_cleared_quot_plus_one_set_bits) << std::endl;
-            //     std::cout << "v_mask\t\t" << v_pd512::bin_print_header_spaced(v_mask) << std::endl;
-            //     std::cout << "\t\t" << std::string(80, '-') << std::endl;
-            // }
-            // std::cout << "mask:\t\t" << v_pd512::bin_print_header_spaced(_pdep_u64(mask, h0) - 1) << std::endl;
-            // std::cout << "x_mask:\t\t" << v_pd512::bin_print_header_spaced((_pdep_u64(mask >> 1ul, h0) - 1) ^ (_pdep_u64(mask, h0) - 1)) << std::endl;
-            // std::cout << "line5:\t\t" << v_pd512::bin_print_header_spaced(line5) << std::endl;
-            // std::cout << "line4:\t\t" << v_pd512::bin_print_header_spaced(line4) << std::endl;
-            // std::cout << "att4:\t\t" << v_pd512::bin_print_header_spaced(att4) << std::endl;
-            // std::cout << "att5:\t\t" << v_pd512::bin_print_header_spaced(att5) << std::endl;
-            // std::cout << "att6:\t\t" << v_pd512::bin_print_header_spaced(att6) << std::endl;
-
-            // return v_mask & v;
             const uint64_t mask = (~_bzhi_u64(-1, quot - pop - 1));
             const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask, h1);
             const uint64_t h_cleared_quot_plus_one_set_bits = _blsr_u64(h_cleared_quot_set_bits);
             const uint64_t v_mask = ((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(h_cleared_quot_plus_one_set_bits)) & (~h1)) >> (quot - pop);
             return v_mask & (v >> (64 - pop));
-            // const bool att = v_mask & (v >> (64 - quot));
-            // const bool att2 = v_mask & (v >> (64 - pop));
-            // const bool res = pd_find_50_v1(quot, rem, pd);
-            // if (res) {
-            //     std::cout << "quot:\t\t" << quot;
-            //     std::cout << "\t\tpop:\t\t " << pop << std::endl;
-            //     std::cout << "h0:\t\t" << v_pd512::bin_print_header_spaced(h0) << std::endl;
-            //     std::cout << "h1:\t\t" << v_pd512::bin_print_header_spaced(h1) << std::endl;
-            //     std::cout << "v:\t\t" << v_pd512::bin_print_header_spaced(v) << std::endl;
-            //     std::cout << "v_sh:\t\t" << v_pd512::bin_print_header_spaced(v >> (64 - pop)) << std::endl;
-            //     std::cout << "v_sh:\t\t" << v_pd512::bin_print_header_spaced(v >> (64 - quot)) << std::endl;
-            //     std::cout << "mask\t\t" << v_pd512::bin_print_header_spaced(mask) << std::endl;
-            //     std::cout << "b_mask\t\t" << v_pd512::bin_print_header_spaced(h_cleared_quot_set_bits) << std::endl;
-            //     std::cout << "e_mask:\t\t" << v_pd512::bin_print_header_spaced(h_cleared_quot_plus_one_set_bits) << std::endl;
-            //     std::cout << "v_mask\t\t" << v_pd512::bin_print_header_spaced(v_mask) << std::endl;
-            //     std::cout << "att\t\t" << bool(att) << std::endl;
-            //     std::cout << "att2\t\t" << bool(att2) << std::endl;
-            //     std::cout << "\t\t" << std::string(80, '-') << std::endl;
-            //     assert(att == att2);
-// 
-            // }
-            // assert(att == att2);
-// 
-            // return v_mask & (v >> (64 - pop));
-
-            // const int64_t pop = _mm_popcnt_u64(header);
-            // const uint64_t begin = (quot ? (select128withPop64(header, quot - 1, pop) + 1) : 0) - quot;
-            // const uint64_t end = select128withPop64(header, quot, pop) - quot;
-            // if (begin == end) return false;
-            // assert(begin <= end);
-            // assert(end <= 51);
-            // return (v & ((UINT64_C(1) << end) - 1)) >> begin;
-
-            // const uint64_t y = _pdep_u64(UINT64_C(3) << (quot - pop - 1), h1);
-            // const uint64_t temp = _tzcnt_u64(y) + 1;
-            // const uint64_t diff = _tzcnt_u64(y >> temp);
-            // if (diff && ((v >> (temp - quot)) & ((UINT64_C(1) << diff) - 1))) {
-            //     std::cout << "Here!" << std::endl;
-            //     const uint64_t mask = (~_bzhi_u64(-1, (quot - pop)));
-            //     const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask >> 1, h1);
-            //     const uint64_t h_cleared_quot_plus_one_set_bits = _blsr_u64(h_cleared_quot_set_bits);
-            //     const uint64_t v_mask = ((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(h_cleared_quot_plus_one_set_bits)) & (~h1)) >> (quot - pop);
-            //     auto res = pd_find_50_v1(quot, rem, pd);
-            //     if (((v_mask & v) != 0) != pd_find_50_v1(quot, rem, pd)) {
-            //         std::cout << "h0:\t\t" << v_pd512::bin_print_header_spaced(h0) << std::endl;
-            //         std::cout << "h1:\t\t" << v_pd512::bin_print_header_spaced(h1) << std::endl;
-            //         std::cout << "v:\t\t" << v_pd512::bin_print_header_spaced(v) << std::endl;
-            //         std::cout << "b_mask\t\t" << v_pd512::bin_print_header_spaced(h_cleared_quot_set_bits) << std::endl;
-            //         std::cout << "e_mask:\t\t" << v_pd512::bin_print_header_spaced(h_cleared_quot_plus_one_set_bits) << std::endl;
-            //         std::cout << "v_mask\t\t" << v_pd512::bin_print_header_spaced(v_mask) << std::endl;
-            //         std::cout << "\t\t" << std::string(80, '-') << std::endl;
-            //     }
-            // }
-            // return diff && ((v >> (temp - quot)) & ((UINT64_C(1) << diff) - 1));
         }
     }
 
@@ -1703,39 +1578,141 @@ namespace pd512 {
         const uint64_t h1 = ((uint64_t *) pd)[1];
         const int64_t pop = _mm_popcnt_u64(h0);
 
-        if (quot <= pop - 1) {
+        if (quot < pop) {
             const uint64_t mask = (~_bzhi_u64(-1, quot - 1));
             const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask, h0);
             const uint64_t h_cleared_quot_plus_one_set_bits = _blsr_u64(h_cleared_quot_set_bits);
             const uint64_t v_mask = ((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(h_cleared_quot_plus_one_set_bits)) & (~h0)) >> quot;
             return v_mask & v;
-        // } else if (quot == pop - 1) {
-        //     const uint64_t leading_one_index = _lzcnt_u64(h0);
-        //     const uint64_t next_leading_one_index = _lzcnt_u64(h0 ^ (1ull << (63ul - leading_one_index)));
-        //     const uint64_t diff = next_leading_one_index - leading_one_index - 1;
-        //     const uint64_t temp = (63 - next_leading_one_index) + 1;
-        //     return diff && ((v >> (temp - quot)) & ((UINT64_C(1) << diff) - 1));
+            // } else if (quot == pop - 1) {
+            //     const uint64_t leading_one_index = _lzcnt_u64(h0);
+            //     const uint64_t next_leading_one_index = _lzcnt_u64(h0 ^ (1ull << (63ul - leading_one_index)));
+            //     const uint64_t diff = next_leading_one_index - leading_one_index - 1;
+            //     const uint64_t temp = (63 - next_leading_one_index) + 1;
+            //     return diff && ((v >> (temp - quot)) & ((UINT64_C(1) << diff) - 1));
         } else if (quot == pop) {
             const uint64_t helper = _lzcnt_u64(h0);
             const uint64_t temp = (63 - helper) + 1;
             const uint64_t diff = helper + _tzcnt_u64(h1);
             return diff && ((v >> (temp - quot)) & ((UINT64_C(1) << diff) - 1));
-        // } else if (quot == pop + 1) {
-        //     const uint64_t temp = _tzcnt_u64(h1) + 1;
-        //     const uint64_t diff = _tzcnt_u64(h1 >> temp);
-        //     return diff && ((v >> (temp - quot)) & ((UINT64_C(1) << diff) - 1));
+            // } else if (quot == pop + 1) {
+            //     const uint64_t temp = _tzcnt_u64(h1) + 1;
+            //     const uint64_t diff = _tzcnt_u64(h1 >> temp);
+            //     return diff && ((v >> (temp - quot)) & ((UINT64_C(1) << diff) - 1));
         } else {
             const uint64_t mask = (~_bzhi_u64(-1, quot - pop - 1));
             const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask, h1);
             const uint64_t h_cleared_quot_plus_one_set_bits = _blsr_u64(h_cleared_quot_set_bits);
             const uint64_t v_mask = ((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(h_cleared_quot_plus_one_set_bits)) & (~h1)) >> (quot - pop);
             return v_mask & (v >> (64 - pop));
-            
-            }
+        }
+    }
+    inline bool pd_find_50_v17(int64_t quot, uint8_t rem, const __m512i *pd, uint64_t h0_pop) {
+        assert(0 == (reinterpret_cast<uintptr_t>(pd) % 64));
+        assert(quot < 50);
+        const __m512i target = _mm512_set1_epi8(rem);
+        uint64_t v = _mm512_cmpeq_epu8_mask(target, *pd) >> 13ul;
 
+        if (!v) return false;
+
+        if (quot == 0) {
+            const int64_t h0 = ((uint64_t *) pd)[0];
+            return v & (_blsmsk_u64(h0) >> 1ul);
         }
 
+        if ((_blsr_u64(v) == 0) && (v << quot)) {
+            const int64_t h0 = ((uint64_t *) pd)[0];
+            // const unsigned __int128 *h = (const unsigned __int128 *) pd;
+            // const unsigned __int128 header = (*h);
+            const int64_t mask = v << quot;
+            return (!(h0 & mask)) && _mm_popcnt_u64(h0 & (mask - 1)) == quot;
+            // const bool att = (!(h0 & mask)) && _mm_popcnt_u64(h0 & (mask - 1)) == quot;
+            // assert(att == pd_find_50_v1(quot, rem, pd));
+        }
+
+        const uint64_t h0 = ((uint64_t *) pd)[0];
+        const uint64_t h1 = ((uint64_t *) pd)[1];
+        const int64_t pop = h0_pop;
+
+        if (quot <= pop - 1) {
+            const uint64_t mask = (~_bzhi_u64(-1, quot - 1));
+            const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask, h0);
+            const uint64_t h_cleared_quot_plus_one_set_bits = _blsr_u64(h_cleared_quot_set_bits);
+            const uint64_t v_mask = ((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(h_cleared_quot_plus_one_set_bits)) & (~h0)) >> quot;
+            return v_mask & v;
+        } else if (quot == pop) {
+            const uint64_t helper = _lzcnt_u64(h0);
+            const uint64_t temp = (63 - helper) + 1;
+            const uint64_t diff = helper + _tzcnt_u64(h1);
+            return diff && ((v >> (temp - quot)) & ((UINT64_C(1) << diff) - 1));
+
+        } else {
+            const uint64_t mask = (~_bzhi_u64(-1, quot - pop - 1));
+            const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask, h1);
+            const uint64_t h_cleared_quot_plus_one_set_bits = _blsr_u64(h_cleared_quot_set_bits);
+            const uint64_t v_mask = ((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(h_cleared_quot_plus_one_set_bits)) & (~h1)) >> (quot - pop);
+            return v_mask & (v >> (64 - pop));
+        }
+    }
+
+
+    inline bool pd_find_50_v18(int64_t quot, uint8_t rem, const __m512i *pd) {
+        assert(0 == (reinterpret_cast<uintptr_t>(pd) % 64));
+        assert(quot < 50);
+        const __m512i target = _mm512_set1_epi8(rem);
+        uint64_t v = _mm512_cmpeq_epu8_mask(target, *pd) >> 13ul;
+
+        if (!v) return false;
+
+        if (quot == 0) {
+            // std::cout << "h0" << std::endl;
+            return v & (_blsmsk_u64(((uint64_t *) pd)[0]) >> 1ul);
+        }
+
+        if ((_blsr_u64(v) == 0) && (v << quot)) {
+            const int64_t h0 = ((uint64_t *) pd)[0];
+
+            const int64_t mask = v << quot;
+            return (!(h0 & mask)) && _mm_popcnt_u64(h0 & (mask - 1)) == quot;
+        }
+
+        const uint64_t h0 = ((uint64_t *) pd)[0];
+        const uint64_t h1 = ((uint64_t *) pd)[1];
+        const int64_t pop = _mm_popcnt_u64(h0);
+
+
+
+        if (quot < pop) {
+            // std::cout << "h1" << std::endl;
+            const uint64_t mask = (~_bzhi_u64(-1, quot - 1));
+            const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask, h0);
+            return (((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(_blsr_u64(h_cleared_quot_set_bits))) & (~h0)) >> quot) & v;
+        } else if (quot > pop) {
+            // std::cout << "h2" << std::endl;
+
+            const uint64_t mask = (~_bzhi_u64(-1, quot - pop - 1));
+            const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask, h1);
+            return (((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(_blsr_u64(h_cleared_quot_set_bits))) & (~h1)) >> (quot - pop)) & (v >> (64 - pop));
+        } else {
+            // std::cout << "h3" << std::endl;
+
+            const uint64_t helper = _lzcnt_u64(h0);
+            const uint64_t temp = (63 - helper) + 1;
+            const uint64_t diff = helper + _tzcnt_u64(h1);
+            return diff && ((v >> (temp - quot)) & ((UINT64_C(1) << diff) - 1));
+            // const uint64_t mask = (~_bzhi_u64(-1, quot - pop - 1));
+            // const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask, h1);
+            // // const uint64_t h_cleared_quot_set_bits = _pdep_u64(mask, h0);
+            // return (((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(_blsr_u64(h_cleared_quot_set_bits))) & (~h1)) >> (quot - pop) & (v >> (64 - pop));
+            // const uint64_t h_cleared_quot_plus_one_set_bits = _blsr_u64(h_cleared_quot_set_bits);
+            // const uint64_t v_mask = ((_blsmsk_u64(h_cleared_quot_set_bits) ^ _blsmsk_u64(h_cleared_quot_plus_one_set_bits)) & (~h1)) >> (quot - pop);
+            // return v_mask & (v >> (64 - pop));
+        }
+    }
+
+
     inline bool pd_find_50(int64_t quot, uint8_t rem, const __m512i *pd) {
+        const int64_t pop = _mm_popcnt_u64(((uint64_t *) pd)[0]);
         // assert(pd_find_50_v1(quot, rem, pd) == pd_find_50_v2(quot, rem, pd));
         assert(pd_find_50_v1(quot, rem, pd) == pd_find_50_v3(quot, rem, pd));
         // assert(pd_find_50_v1(quot, rem, pd) == pd_find_50_v4(quot, rem, pd));
@@ -1751,6 +1728,8 @@ namespace pd512 {
         assert(pd_find_50_v1(quot, rem, pd) == pd_find_50_v14(quot, rem, pd));
         assert(pd_find_50_v1(quot, rem, pd) == pd_find_50_v15(quot, rem, pd));
         assert(pd_find_50_v1(quot, rem, pd) == pd_find_50_v16(quot, rem, pd));
+        assert(pd_find_50_v1(quot, rem, pd) == pd_find_50_v18(quot, rem, pd));
+        assert(pd_find_50_v1(quot, rem, pd) == pd_find_50_v17(quot, rem, pd, pop));
         // assert(pd_find_50_v1(quot, rem, pd) == pd_find_50_x2(quot, rem, pd));
         // return pd_find_50_v4(quot, rem, pd);
         return pd_find_50_v9(quot, rem, pd);

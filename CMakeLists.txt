@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -msse2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mlzcnt")
 
 set(PROJECT_SOURCES
-    pd320.hpp pd320.cpp
+    # pd320.hpp pd320.cpp
     pd512.hpp pd512.cpp
     utils.hpp utils.cpp
 )

@@ -224,6 +224,42 @@ auto benchmark_find_v16(const __m512i *pd) -> ulong {
     return std::chrono::duration_cast<ns>(t1 - t0).count();
 }
 
+auto benchmark_find_v17(const __m512i *pd) -> ulong {
+    const uint64_t quot_range = 50;
+    const uint64_t pop = _mm_popcnt_u64(((uint64_t *) pd)[0]);
+    // __m512i pd;
+    // set_pd(pd, quot_range, 51);
+    static volatile bool dummy;
+    bool x = 0;
+
+    // volatile uint64_t result = 0;
+    auto t0 = std::chrono::high_resolution_clock::now();
+    for (uint64_t i = 0; i < 1'000'000'000; ++i) {
+        // Prevent overlapping execution by serializing on result
+        x ^= pd512::pd_find_50_v17(reduce16(i, quot_range), i, pd, pop);
+    }
+    dummy = x;
+    auto t1 = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<ns>(t1 - t0).count();
+}
+
+auto benchmark_find_v18(const __m512i *pd) -> ulong {
+    const uint64_t quot_range = 50;
+    // __m512i pd;
+    // set_pd(pd, quot_range, 51);
+    static volatile bool dummy;
+    bool x = 0;
+    // volatile uint64_t result = 0;
+    auto t0 = std::chrono::high_resolution_clock::now();
+    for (uint64_t i = 0; i < 1'000'000'000; ++i) {
+        // Prevent overlapping execution by serializing on result
+        x ^= pd512::pd_find_50_v18(reduce16(i, quot_range), i, pd);
+    }
+    dummy = x;
+    auto t1 = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<ns>(t1 - t0).count();
+}
+
 // void benchmark_find() {
 //     const uint64_t quot_range = 50;
 //     __m512i x;
@@ -275,6 +311,7 @@ auto benchmark_find_all() -> void {
         std::cout << "v14:\t" << benchmark_find_v14(&x) << std::endl;
         std::cout << "v15:\t" << benchmark_find_v15(&x) << std::endl;
         std::cout << "v16:\t" << benchmark_find_v16(&x) << std::endl;
+        std::cout << "v17:\t" << benchmark_find_v17(&x) << std::endl;
         std::cout << std::string(80, '*') << std::endl;
     }
     /* while (true) {
@@ -313,6 +350,9 @@ auto benchmark_find_fast_functions() -> void {
         std::cout << "v14:\t" << benchmark_find_v14(&x) << std::endl;
         std::cout << "v15:\t" << benchmark_find_v15(&x) << std::endl;
         std::cout << "v16:\t" << benchmark_find_v16(&x) << std::endl;
+        std::cout << "v17:\t" << benchmark_find_v17(&x) << std::endl;
+        std::cout << "v18:\t" << benchmark_find_v18(&x) << std::endl;
+
         std::cout << std::string(80, '*') << std::endl;
     }
 }
