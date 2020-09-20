@@ -26,16 +26,16 @@ namespace v_pd512_plus {
         // constexpr uint64_t h1_mask = (1ULL << (101ul - 64ul)) - 1ul;
         const uint64_t h0 = _mm_extract_epi64(_mm512_castsi512_si128(*pd), 0);
         const uint64_t h1 = _mm_extract_epi64(_mm512_castsi512_si128(*pd), 1);
-        //std::cout << "h0: " << bin_print_header_spaced2(h0) << std::endl;
-        //std::cout << "h1: " << bin_print_header_spaced2(h1) << std::endl;
+        std::cout << "h0: " << bin_print_header_spaced2(h0) << std::endl;
+        std::cout << "h1: " << bin_print_header_spaced2(h1) << std::endl;
     }
 
     inline void print_headers_masked(const __m512i *pd) {
         constexpr uint64_t h1_mask = (1ULL << (101ul - 64ul)) - 1ul;
         const uint64_t h0 = _mm_extract_epi64(_mm512_castsi512_si128(*pd), 0);
         const uint64_t h1 = _mm_extract_epi64(_mm512_castsi512_si128(*pd), 1) & h1_mask;
-        //std::cout << "h0: " << bin_print_header_spaced2(h0) << std::endl;
-        //std::cout << "h1: " << bin_print_header_spaced2(h1) << std::endl;
+        std::cout << "h0: " << bin_print_header_spaced2(h0) << std::endl;
+        std::cout << "h1: " << bin_print_header_spaced2(h1) << std::endl;
     }
     inline void print_h1(bool mask, const __m512i *pd) {
         constexpr uint64_t h1_mask = (1ULL << (101ul - 64ul)) - 1ul;
@@ -43,8 +43,8 @@ namespace v_pd512_plus {
         uint64_t h1 = _mm_extract_epi64(_mm512_castsi512_si128(*pd), 1);
         if (mask)
             h1 &= h1_mask;
-        // //std::cout << "h0: " << bin_print_header_spaced2(h0) << std::endl;
-        //std::cout << "h1: " << bin_print_header_spaced2(h1) << std::endl;
+        // std::cout << "h0: " << bin_print_header_spaced2(h0) << std::endl;
+        std::cout << "h1: " << bin_print_header_spaced2(h1) << std::endl;
     }
 }// namespace v_pd512_plus
 
@@ -191,94 +191,6 @@ namespace pd512_plus {
         return count_ones_up_to_the_kth_zero(pd);
     }
 
-    // inline uint8_t get_last_quot_in_pd_super_naive(const __m512i *pd) {
-    //     return count_ones_up_to_the_kth_zero(pd);
-    // }
-
-    // inline uint64_t get_last_quot_in_pd_naive_easy_case_helper(const __m512i *pd) {
-    //     assert(get_hi_meta_bits(pd) <= 32);
-    //     constexpr uint64_t h1_mask = (1ULL << (101ul - 64ul)) - 1ul;
-    //     const uint64_t h0 = _mm_extract_epi64(_mm512_castsi512_si128(*pd), 0);
-    //     const uint64_t h1 = _mm_extract_epi64(_mm512_castsi512_si128(*pd), 1) & h1_mask;
-
-    //     if (h1 == 0) {
-    //         uint64_t temp = (~h0) & (h0 >> 1);
-    //         assert(temp);
-    //         size_t first_one = _lzcnt_u64(h0);
-    //         size_t temps_first_one = _lzcnt_u64(temp);
-    //         assert(temps_first_one > first_one);
-    //         return temps_first_one - first_one;
-    //     }
-
-    //     uint64_t temp = (~h1) & (h1 >> 1);
-    //     if (temp == 0) {
-    //         size_t end = _tzcnt_u64(~h1);
-    //         size_t begin = _lzcnt_u64(~h0);
-    //         return end + begin;
-    //     }
-    //     assert(_lzcnt_u64(temp) > _lzcnt_u64(h1));
-    //     return _lzcnt_u64(temp) - _lzcnt_u64(h1);
-    // }
-    // inline uint64_t get_last_quot_in_pd_naive_easy_case(const __m512i *pd) {
-    //     // return get_last_quot_in_pd_naive_easy_case_helper(pd);
-    //     return QUOT_SIZE - get_last_quot_in_pd_naive_easy_case_helper(pd);
-    // }
-
-
-    // inline uint8_t get_last_quot_in_pd(const __m512i *pd) {
-    //     auto a = 50 - get_last_quot_in_pd_naive(pd);
-    //     auto b = get_last_quot_in_pd_super_naive(pd);
-    //     if (a != b) {
-    //         v_pd512::print_headers_masked(pd);
-    //     }
-    //     assert(a == b);
-    //     return 50 - get_last_quot_in_pd_naive(pd);
-    // }
-
-
-    // inline uint64_t decode_last_quot_in_pd_naive(const __m512i *pd) {
-    //     const uint64_t header_meta_bits = _mm_extract_epi8(_mm512_castsi512_si128(*pd), 12);
-    //     const uint64_t hi_meta_bits = _mm_extract_epi8(_mm512_castsi512_si128(*pd), 12) & (32 + 64);
-    //     if (hi_meta_bits == 0) {
-    //         uint64_t att = (header_meta_bits & 16) ? 49 : get_last_byte(pd);
-    //         if (header_meta_bits & 16) {
-    //             assert(!(header_meta_bits & 8));
-    //         }
-
-    //         // auto capacity = count_zeros_up_to_the_kth_one(pd, att + 1);
-    //         // assert(capacity == get_capacity(pd));
-            //std::cout << "h0" << std::endl;
-    //         // return count_ones_up_to_the_kth_zero(pd, capacity);
-    //     }
-    //     if (hi_meta_bits & 32) {
-    //         const uint64_t reduce_from_max_quot = header_meta_bits >> 6;
-    //         assert(reduce_from_max_quot < 4);
-            //std::cout << "h1" << std::endl;
-    //         return count_ones_up_to_the_kth_zero(pd);
-    //         // return count_ones_up_to_the_kth_zero(pd, QUOT_SIZE - reduce_from_max_quot);
-    //     }
-    //     if (hi_meta_bits == 64) {
-    //         const uint64_t reduce_from_max_quot = ((header_meta_bits >> 1) & 15) + 4;
-    //         assert(reduce_from_max_quot >= 4);
-    //         assert(reduce_from_max_quot <= 19);
-    //         // assert(QUOT_SIZE - reduce_from_max_quot > 0);
-            //std::cout << "h2" << std::endl;
-    //         return count_ones_up_to_the_kth_zero(pd);
-    //         // return count_ones_up_to_the_kth_zero(pd, QUOT_SIZE - reduce_from_max_quot);
-    //     }
-    //     if (hi_meta_bits == 128) {
-    //         const uint64_t reduce_from_max_quot = (header_meta_bits & 31) + 18;
-    //         assert(reduce_from_max_quot >= 18);
-    //         assert(reduce_from_max_quot <= 49);
-            //std::cout << "h3" << std::endl;
-    //         return count_ones_up_to_the_kth_zero(pd);
-    //         // return count_ones_up_to_the_kth_zero(pd, QUOT_SIZE - reduce_from_max_quot);
-    //     }
-    //     assert(false);
-
-    //     return count_ones_up_to_the_kth_zero(pd);
-    // }
-
     inline uint64_t decode_last_quot(const __m512i *pd) {
         const uint64_t header_last_byte = _mm_extract_epi8(_mm512_castsi512_si128(*pd), 12);
         auto temp = (4 - ((header_last_byte >> 3) & 3));
@@ -286,22 +198,22 @@ namespace pd512_plus {
         // const uint64_t hi_meta_bits = _mm_extract_epi8(_mm512_castsi512_si128(*pd), 12) & 224;
         switch (header_last_byte & (32 + 64)) {
             case 0:
-                //std::cout << "d0" << std::endl;
+                // std::cout << "d0" << std::endl;
                 return (header_last_byte & 16) ? 49 : get_last_byte(pd);
                 // break;
             case 32:
                 // auto reduce_from_max_quot = 4 - ((header_last_byte >> 3) & 3);
-                //std::cout << "d1" << std::endl;
+                // std::cout << "d1" << std::endl;
                 return (QUOT_SIZE - 1) - (4 - ((header_last_byte >> 3) & 3));
                 // break;
             case 64:
                 // auto reduce_from_max_quot = ((header_last_byte >> 1) & 15) + 5;
-                //std::cout << "d2" << std::endl;
+                // std::cout << "d2" << std::endl;
                 return (QUOT_SIZE - 1) - ((header_last_byte >> 1) & 15) - 5;
                 // break;
             case 96:
                 // auto reduce_from_max_quot = ((header_last_byte  & 31) + 18);
-                //std::cout << "d3" << std::endl;
+                // std::cout << "d3" << std::endl;
                 return (QUOT_SIZE - 1) - ((header_last_byte & 31) + 18);
                 // break;
             default:
@@ -351,6 +263,8 @@ namespace pd512_plus {
 
         if ((header_last_byte & (32 + 64 + 128)) == 0) {
             auto capacity = count_zeros_up_to_the_kth_one(pd, QUOT_SIZE);
+            if (capacity == 0)
+                return 0;
             return count_ones_up_to_the_kth_zero(pd, capacity);
         }
 
@@ -413,9 +327,15 @@ namespace pd512_plus {
     //     return 4242;
     // }
     inline uint64_t decode_last_quot_wrapper(const __m512i *pd) {
+        // assert(decode_last_quot(pd) == decode_last_quot_safe(pd));
+        // return decode_last_quot(pd);
         auto a = decode_last_quot(pd);
         auto b = decode_last_quot_safe(pd);
         // auto c = decode_last_quot_in_pd_att(pd);
+        if (a != b) {
+            v_pd512_plus::print_headers(pd);
+            // v_pd512_plus::print_h1(0,pd);
+        }
         assert(a == b);
         // assert(a == c);
         return a;
@@ -755,7 +675,6 @@ namespace pd512_plus {
         encode_last_quot_only_decrease(new_last_quot, pd);
     }
 
-
     inline void decrease_pd_max_quot_after_swap_insertion(int64_t possible_max_quot, int64_t old_quot, __m512i *pd) {
         // set_overflow_bit(pd);
         // assert(pd_full(pd));
@@ -763,6 +682,8 @@ namespace pd512_plus {
         //Todo: this should be computed before the deletion. depeneding on the next zero place.
         //currently, the PD state is not valid.
         const uint64_t new_quot = get_last_quot_for_full_pd_without_deletions(pd);
+        if (new_quot == old_quot)
+            return;
         assert(new_quot < old_quot);
         assert(possible_max_quot <= new_quot);
         encode_last_quot_only_decrease(new_quot, pd);
@@ -820,6 +741,7 @@ namespace pd512_plus {
         // //std::cout << std::endl;
         return pd_find_50_v18(quot, rem, pd) ? Yes : No;
     }
+
     inline pd_Status pd_find_50(int64_t quot, uint8_t rem, const __m512i *pd) {
         const uint64_t last_quot = decode_last_quot_wrapper(pd);
         int cmp = (quot < last_quot) + (quot == last_quot) * 2;
@@ -862,7 +784,6 @@ namespace pd512_plus {
         memcpy(&((uint8_t *) pd)[12], &header_last_byte, 1);
         assert(old_header_meta_bits == get_hi_meta_bits(pd));
     }
-
 
     inline uint64_t pd_add_50_not_full_after(int64_t quot, uint8_t rem, __m512i *pd) {
         assert(quot < 50);
@@ -995,10 +916,18 @@ namespace pd512_plus {
         const uint64_t end_fingerprint = 51;
         assert(begin_fingerprint < end_fingerprint);
         assert(end_fingerprint <= 51);
-        uint64_t i =
-                _tzcnt_u64(((_mm512_cmp_epi8_mask(target, *pd, 2) >> (begin_fingerprint + 13)) << (begin_fingerprint)) | (1ull << end_fingerprint));
 
-        assert((i == end_fingerprint) || (rem <= ((const uint8_t *) pd)[kBytes2copy + i]));
+        uint64_t i = begin_fingerprint;
+        for (; i < end_fingerprint; ++i) {
+            if (rem <= ((const uint8_t *) pd)[kBytes2copy + i]) break;
+        }
+        assert((i == end_fingerprint) ||
+               (rem <= ((const uint8_t *) pd)[kBytes2copy + i]));
+
+        // uint64_t i =
+        //         _tzcnt_u64(((_mm512_cmp_epi8_mask(target, *pd, 2) >> (begin_fingerprint + 13)) << (begin_fingerprint)) | (1ull << end_fingerprint));
+
+        // assert((i == end_fingerprint) || (rem <= ((const uint8_t *) pd)[kBytes2copy + i]));
 
         memmove(&((uint8_t *) pd)[kBytes2copy + i + 1],
                 &((const uint8_t *) pd)[kBytes2copy + i],
@@ -1020,7 +949,7 @@ namespace pd512_plus {
         const unsigned __int128 *h = (const unsigned __int128 *) pd;
         constexpr unsigned __int128 kLeftoverMask = (((unsigned __int128) 1) << (50 + 51)) - 1;
         const unsigned __int128 header = (*h) & kLeftoverMask;
-        assert(popcount128(header) == 50);
+        // assert(popcount128(header) == 50);
         constexpr unsigned kBytes2copy = (50 + 51 + CHAR_BIT - 1) / CHAR_BIT;
 
 
@@ -1045,7 +974,7 @@ namespace pd512_plus {
         assert(pd_find_50(quot, rem, pd));
         unsigned __int128 new_header = header & ((((unsigned __int128) 1) << begin) - 1);
         new_header |= ((header >> end) << (end - 1));
-        assert(popcount128(new_header) == 50);
+        // assert(popcount128(new_header) == 50);
         new_header |= (did_pd_overflowed(pd)) ? ((unsigned __int128) 1) << 101ul : 0;
 
 
@@ -1062,23 +991,34 @@ namespace pd512_plus {
         return rem1 <= rem2;
     }
 
-
     inline uint64_t pd_swap_short(int64_t quot, uint8_t rem, __m512i *pd) {
         const uint64_t new_qr = (quot << 8u) | ((uint64_t) rem);
         const uint64_t last_quot = decode_last_quot_wrapper(pd);
         const uint64_t old_rem = get_last_byte(pd);
-        uint64_t old_qr = (last_quot << 8) | rem;
+        uint64_t old_qr = (last_quot << 8) | old_rem;
+        // std::cout << "last_quot: " << last_quot << std::endl;
+        // std::cout << "old_rem: " << old_rem << std::endl;
+        // std::cout << "old_qr: " << old_qr << std::endl;
 
-        if (old_qr <= new_qr)
+
+        if (old_qr <= new_qr) {
+            // std::cout << "swap_1" << std::endl;
             return new_qr;
-
+        }
         //Only remainder update (no quot decreasing).
         if (last_quot == quot) {
+            // std::cout << "swap_2" << std::endl;
             size_t quot_capacity = get_specific_quot_capacity(quot, pd);
+            // if (!quot_capacity){
+            //     std::cout << "quot: " << quot << std::endl;
+            //     v_pd512_plus::print_headers(pd);
+            // }
+            assert(quot_capacity);
             pd_add_50_only_rem(rem, quot_capacity, pd);
             return old_qr;
         }
 
+        // std::cout << "swap_3" << std::endl;
         conditional_remove(last_quot, get_last_byte(pd), pd);
         pd_add_50_full_after(quot, rem, pd);
         // This might be redundent in some cases.
@@ -1089,6 +1029,7 @@ namespace pd512_plus {
     inline uint64_t pd_conditional_add_50(int64_t quot, uint8_t rem, __m512i *pd) {
         const uint64_t header_last_byte = _mm_extract_epi8(_mm512_castsi512_si128(*pd), 12);
         if ((header_last_byte & 248) == 0) {
+            // std::cout << "ca_1" << std::endl;
             uint64_t res = pd_add_50_not_full_after(quot, rem, pd);
             assert(res == (1 << 15));
             update_max_quot_when_pd_is_not_full(quot, pd);
@@ -1096,6 +1037,7 @@ namespace pd512_plus {
             assert(pd_find_50(quot, rem, pd) == Yes);
             return res;
         } else if ((header_last_byte & 248) == 8) {
+            // std::cout << "ca_2" << std::endl;
             //std::cout << "before adding" << std::endl;
             // v_pd512_plus::print_h1(0, pd);
             // v_pd512_plus::print_headers_masked(pd);
@@ -1122,6 +1064,7 @@ namespace pd512_plus {
             assert(pd_find_50(quot, rem, pd) == Yes);
             return res;
         } else {
+            // std::cout << "ca_3" << std::endl;
             assert(pd_full(pd));
             return pd_swap_short(quot, rem, pd);
         }
@@ -1170,7 +1113,7 @@ namespace pd512_plus {
 
 //     const int64_t old_quot = get_last_quot_in_pd(pd);
 //     if (old_quot < quot) {
-        //std::cout << "pd_swap 0" << std::endl;
+//std::cout << "pd_swap 0" << std::endl;
 //         set_overflow_bit(pd);
 //         uint64_t res = (quot << 8u) | ((uint64_t) rem);
 //         assert(res);
@@ -1182,7 +1125,7 @@ namespace pd512_plus {
 
 
 //     if ((old_quot == quot) && (old_rem <= rem)) {
-        //std::cout << "pd_swap 1" << std::endl;
+//std::cout << "pd_swap 1" << std::endl;
 //         set_overflow_bit(pd);
 //         uint64_t res = (quot << 8u) | ((uint64_t) rem);
 //         if (!res) {
@@ -1210,7 +1153,96 @@ namespace pd512_plus {
 //     set_overflow_bit(pd);
 //     uint64_t res = (old_quot << 8u) | ((uint64_t) old_rem);
 //     assert(res);
-    //std::cout << "pd_swap 2" << std::endl;
+//std::cout << "pd_swap 2" << std::endl;
 //     return res;
 //     // return (old_quot << 8u) | old_rem;
+// }
+
+
+// inline uint8_t get_last_quot_in_pd_super_naive(const __m512i *pd) {
+//     return count_ones_up_to_the_kth_zero(pd);
+// }
+
+// inline uint64_t get_last_quot_in_pd_naive_easy_case_helper(const __m512i *pd) {
+//     assert(get_hi_meta_bits(pd) <= 32);
+//     constexpr uint64_t h1_mask = (1ULL << (101ul - 64ul)) - 1ul;
+//     const uint64_t h0 = _mm_extract_epi64(_mm512_castsi512_si128(*pd), 0);
+//     const uint64_t h1 = _mm_extract_epi64(_mm512_castsi512_si128(*pd), 1) & h1_mask;
+
+//     if (h1 == 0) {
+//         uint64_t temp = (~h0) & (h0 >> 1);
+//         assert(temp);
+//         size_t first_one = _lzcnt_u64(h0);
+//         size_t temps_first_one = _lzcnt_u64(temp);
+//         assert(temps_first_one > first_one);
+//         return temps_first_one - first_one;
+//     }
+
+//     uint64_t temp = (~h1) & (h1 >> 1);
+//     if (temp == 0) {
+//         size_t end = _tzcnt_u64(~h1);
+//         size_t begin = _lzcnt_u64(~h0);
+//         return end + begin;
+//     }
+//     assert(_lzcnt_u64(temp) > _lzcnt_u64(h1));
+//     return _lzcnt_u64(temp) - _lzcnt_u64(h1);
+// }
+// inline uint64_t get_last_quot_in_pd_naive_easy_case(const __m512i *pd) {
+//     // return get_last_quot_in_pd_naive_easy_case_helper(pd);
+//     return QUOT_SIZE - get_last_quot_in_pd_naive_easy_case_helper(pd);
+// }
+
+
+// inline uint8_t get_last_quot_in_pd(const __m512i *pd) {
+//     auto a = 50 - get_last_quot_in_pd_naive(pd);
+//     auto b = get_last_quot_in_pd_super_naive(pd);
+//     if (a != b) {
+//         v_pd512::print_headers_masked(pd);
+//     }
+//     assert(a == b);
+//     return 50 - get_last_quot_in_pd_naive(pd);
+// }
+
+
+// inline uint64_t decode_last_quot_in_pd_naive(const __m512i *pd) {
+//     const uint64_t header_meta_bits = _mm_extract_epi8(_mm512_castsi512_si128(*pd), 12);
+//     const uint64_t hi_meta_bits = _mm_extract_epi8(_mm512_castsi512_si128(*pd), 12) & (32 + 64);
+//     if (hi_meta_bits == 0) {
+//         uint64_t att = (header_meta_bits & 16) ? 49 : get_last_byte(pd);
+//         if (header_meta_bits & 16) {
+//             assert(!(header_meta_bits & 8));
+//         }
+
+//         // auto capacity = count_zeros_up_to_the_kth_one(pd, att + 1);
+//         // assert(capacity == get_capacity(pd));
+//std::cout << "h0" << std::endl;
+//         // return count_ones_up_to_the_kth_zero(pd, capacity);
+//     }
+//     if (hi_meta_bits & 32) {
+//         const uint64_t reduce_from_max_quot = header_meta_bits >> 6;
+//         assert(reduce_from_max_quot < 4);
+//std::cout << "h1" << std::endl;
+//         return count_ones_up_to_the_kth_zero(pd);
+//         // return count_ones_up_to_the_kth_zero(pd, QUOT_SIZE - reduce_from_max_quot);
+//     }
+//     if (hi_meta_bits == 64) {
+//         const uint64_t reduce_from_max_quot = ((header_meta_bits >> 1) & 15) + 4;
+//         assert(reduce_from_max_quot >= 4);
+//         assert(reduce_from_max_quot <= 19);
+//         // assert(QUOT_SIZE - reduce_from_max_quot > 0);
+//std::cout << "h2" << std::endl;
+//         return count_ones_up_to_the_kth_zero(pd);
+//         // return count_ones_up_to_the_kth_zero(pd, QUOT_SIZE - reduce_from_max_quot);
+//     }
+//     if (hi_meta_bits == 128) {
+//         const uint64_t reduce_from_max_quot = (header_meta_bits & 31) + 18;
+//         assert(reduce_from_max_quot >= 18);
+//         assert(reduce_from_max_quot <= 49);
+//std::cout << "h3" << std::endl;
+//         return count_ones_up_to_the_kth_zero(pd);
+//         // return count_ones_up_to_the_kth_zero(pd, QUOT_SIZE - reduce_from_max_quot);
+//     }
+//     assert(false);
+
+//     return count_ones_up_to_the_kth_zero(pd);
 // }

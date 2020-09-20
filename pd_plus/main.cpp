@@ -14,6 +14,12 @@ int main(int argc, char **argv) {
         rand_test1();
     }
 
+    for (size_t i = 0; i < 1024; i++) {
+        std::cout << "I: " << i << std::endl;
+        srand(i);
+        test_swap_wrapper();
+    }
+
     std::cout << "end." << std::endl;
     return 0;
 }

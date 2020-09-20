@@ -512,16 +512,18 @@ namespace pd512_plus {
         const unsigned __int128 *h = (const unsigned __int128 *) pd;
         const unsigned __int128 header = *h;
         auto index = count_zeros_up_to_the_kth_one(pd, quot) + quot;
-        unsigned __int128 b = ((unsigned __int128) 1) << (index + 1);
+        unsigned __int128 b = ((unsigned __int128) 1) << (index);
+        // assert(header & b);
+        // b <<= 1;
         auto res = 129;
-        for (size_t i = index + 1; i < 128; i++) {
+        for (size_t i = index; i < 128; i++) {
             if (b & header) {
-                res = i - (index + 1);
+                res = i - (index);
                 break;
             }
             b <<= 1;
         }
-        b = ((unsigned __int128) 1) << (index + 1);
+        b = ((unsigned __int128) 1) << (index);
         size_t counter = 0;
         while (b) {
             if (b & header) {
@@ -532,6 +534,7 @@ namespace pd512_plus {
             b <<= 1;
         }
         assert(false);
+        return -42;
     }
 
     auto get_capacity_old(const __m512i *x) -> size_t {
